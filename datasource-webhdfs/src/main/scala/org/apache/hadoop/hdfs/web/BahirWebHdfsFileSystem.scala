@@ -17,11 +17,14 @@
 
 package org.apache.hadoop.hdfs.web
 
-import java.net.URL
+import java.io.IOException
+import java.net.{HttpURLConnection, URL}
 
-import org.apache.hadoop.fs.Path
+import org.apache.hadoop.fs.{FSDataInputStream, Path}
+import org.apache.hadoop.hdfs.ByteRangeInputStream
+import org.apache.hadoop.hdfs.web.WebHdfsFileSystem.OffsetUrlInputStream
 import org.apache.hadoop.hdfs.web.resources.HttpOpParam.Op
-import org.apache.hadoop.hdfs.web.resources.Param
+import org.apache.hadoop.hdfs.web.resources.{BufferSizeParam, GetOpParam, OffsetParam, Param}
 
 /**
  * A FileSystem for HDFS over the web, extending [[org.apache.hadoop.hdfs.web.WebHdfsFileSystem]]
@@ -44,5 +47,39 @@ class BahirWebHdfsFileSystem extends WebHdfsFileSystem {
       url.getFile.replaceFirst(WebHdfsFileSystem.PATH_PREFIX,
         gatewayPath + WebHdfsFileSystem.PATH_PREFIX))
   }
+
+//  @throws[IOException]
+//  override def open(f: Path, buffersize: Int): FSDataInputStream = {
+//    statistics.incrementReadOps(1)
+//    val op: Op = GetOpParam.Op.OPEN
+//    val url: URL = toUrl(op, f, new BufferSizeParam(buffersize))
+//    new FSDataInputStream(new WebHdfsFileSystem.OffsetUrlInputStream(
+//      new WebHdfsFileSystem.OffsetUrlOpener(url), new WebHdfsFileSystem#OffsetUrlOpener(null)))
+//  }
+
+  // hadoop 2.2
+  @throws[IOException]
+  override def open(f: Path, buffersize: Int): FSDataInputStream = {
+    statistics.incrementReadOps(1)
+    val op: Op = GetOpParam.Op.OPEN
+    val url: URL = toUrl(op, f, new BufferSizeParam(buffersize))
+    val offsetUrlInputStream: OffsetUrlInputStream = new WebHdfsFileSystem.OffsetUrlInputStream(
+      new OffsetUrlOpener(url), new OffsetUrlOpener(null))
+
+    val inputStream = new FSDataInputStream(offsetUrlInputStream)
+
+//    val inputStream = super.open(f, buffersize)
+//    val wrappedInputStream = inputStream.getWrappedStream
+
+    inputStream
+  }
+
+  // hadoop 2.7.3
+//  @throws[IOException]
+//  def open(f: Path, bufferSize: Int): FSDataInputStream = {
+//    statistics.incrementReadOps(1)
+//    new FSDataInputStream(new WebHdfsInputStream(f, bufferSize))
+//  }
+
 
 }
