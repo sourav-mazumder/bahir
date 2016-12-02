@@ -22,9 +22,8 @@ import java.net.{HttpURLConnection, URI, URL}
 
 import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FSDataInputStream, Path}
-import org.apache.hadoop.hdfs.web.WebHdfsFileSystem.OffsetUrlInputStream
-import org.apache.hadoop.hdfs.web.resources.HttpOpParam.Op
 import org.apache.hadoop.hdfs.web.resources.{BufferSizeParam, GetOpParam, OffsetParam, Param}
+import org.apache.hadoop.hdfs.web.resources.HttpOpParam.Op
 
 /**
  * A FileSystem for HDFS over the web, extending [[org.apache.hadoop.hdfs.web.WebHdfsFileSystem]]
