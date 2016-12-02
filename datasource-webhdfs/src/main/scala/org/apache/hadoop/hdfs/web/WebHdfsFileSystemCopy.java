@@ -95,8 +95,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 
 /** A FileSystem for HDFS over the web. */
-public class WebHdfsFileSystemCopy extends FileSystem
-        implements DelegationTokenRenewer.Renewable, TokenAspect.TokenManagementDelegator {
+public class WebHdfsFileSystemCopy extends WebHdfsFileSystem {
     public static final Log LOG = LogFactory.getLog(WebHdfsFileSystem.class);
     /** File System URI: {SCHEME}://namenode:port/path/to/file */
     public static final String SCHEME = "webhdfs";
