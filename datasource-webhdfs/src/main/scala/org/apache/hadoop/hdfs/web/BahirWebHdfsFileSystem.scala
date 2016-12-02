@@ -18,10 +18,10 @@
 package org.apache.hadoop.hdfs.web
 
 import java.io.IOException
-import java.net.{HttpURLConnection, URL}
+import java.net.{HttpURLConnection, URI, URL}
 
+import org.apache.hadoop.conf.Configuration
 import org.apache.hadoop.fs.{FSDataInputStream, Path}
-import org.apache.hadoop.hdfs.ByteRangeInputStream
 import org.apache.hadoop.hdfs.web.WebHdfsFileSystem.OffsetUrlInputStream
 import org.apache.hadoop.hdfs.web.resources.HttpOpParam.Op
 import org.apache.hadoop.hdfs.web.resources.{BufferSizeParam, GetOpParam, OffsetParam, Param}
@@ -40,46 +40,52 @@ class BahirWebHdfsFileSystem extends WebHdfsFileSystem {
   val gatewayPath = "/gateway/default"
 
 
+  override def initialize(uri: URI, conf: Configuration): Unit = {
+
+    // scalastyle:off println
+    println("Hi there " + this.getClass + ".initialize(uri: URI, conf: Configuration)")
+    // scalastyle:on println
+
+    super.initialize(uri, conf)
+  }
+
   override def toUrl(op: Op, fspath: Path, parameters: Param[_, _]*): URL = {
     val url = super.toUrl(op, fspath, parameters: _*)
+
+    // scalastyle:off println
+    println("Hi there " + this.getClass + ".toUrl(op: Op, fspath: Path, parameters: Param[_, _]*)")
+    // scalastyle:on println
 
     new URL(url.getProtocol, url.getHost, url.getPort,
       url.getFile.replaceFirst(WebHdfsFileSystem.PATH_PREFIX,
         gatewayPath + WebHdfsFileSystem.PATH_PREFIX))
   }
 
-//  @throws[IOException]
-//  override def open(f: Path, buffersize: Int): FSDataInputStream = {
-//    statistics.incrementReadOps(1)
-//    val op: Op = GetOpParam.Op.OPEN
-//    val url: URL = toUrl(op, f, new BufferSizeParam(buffersize))
-//    new FSDataInputStream(new WebHdfsFileSystem.OffsetUrlInputStream(
-//      new WebHdfsFileSystem.OffsetUrlOpener(url), new WebHdfsFileSystem#OffsetUrlOpener(null)))
-//  }
-
-  // hadoop 2.2
+  // hadoop 2.7.3
   @throws[IOException]
-  override def open(f: Path, buffersize: Int): FSDataInputStream = {
+  override def open(f: Path, bufferSize: Int): FSDataInputStream = {
     statistics.incrementReadOps(1)
-    val op: Op = GetOpParam.Op.OPEN
-    val url: URL = toUrl(op, f, new BufferSizeParam(buffersize))
-    val offsetUrlInputStream: OffsetUrlInputStream = new WebHdfsFileSystem.OffsetUrlInputStream(
-      new OffsetUrlOpener(url), new OffsetUrlOpener(null))
 
-    val inputStream = new FSDataInputStream(offsetUrlInputStream)
+    // scalastyle:off println
+    println("Hi there " + this.getClass + ".open(f: Path, bufferSize: Int)")
+    // scalastyle:on println
 
-//    val inputStream = super.open(f, buffersize)
-//    val wrappedInputStream = inputStream.getWrappedStream
-
-    inputStream
+    val webHdfsInputStream: WebHdfsInputStream = new WebHdfsInputStream(f, bufferSize)
+    webHdfsInputStream.setReadRunner(new BahirReadRunner(f, bufferSize))
+    new FSDataInputStream(webHdfsInputStream)
   }
 
-  // hadoop 2.7.3
-//  @throws[IOException]
-//  def open(f: Path, bufferSize: Int): FSDataInputStream = {
-//    statistics.incrementReadOps(1)
-//    new FSDataInputStream(new WebHdfsInputStream(f, bufferSize))
-//  }
+  class BahirReadRunner(p: Path, bs: Int) extends ReadRunner(p: Path, bs: Int) {
+    override def getUrl: URL = {
+      val url = super.getUrl
 
+      // scalastyle:off println
+      println("Hi there " + this.getClass + ".BahirReadRunner.getUrl(f: Path, bs: Int)")
+      // scalastyle:on println
 
+      new URL(url.getProtocol, url.getHost, url.getPort,
+        url.getFile.replaceFirst(WebHdfsFileSystem.PATH_PREFIX,
+          gatewayPath + WebHdfsFileSystem.PATH_PREFIX))
+    }
+  }
 }
