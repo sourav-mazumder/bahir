@@ -28,6 +28,8 @@
 -->
 
 <suppressions>
+    <suppress checks="[a-zA-Z0-9]*"
+              files="datasource-webhdfs/src/main/scala/org/apache/hadoop/hdfs/web/WebHdfsFileSystemCopy.java"/>
     <suppress checks="RedundantModifier"
               files="streaming-akka/examples/src/main/java/org/apache/spark/examples/streaming/akka/JavaActorWordCount.java"/>
 </suppressions>

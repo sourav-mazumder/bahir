@@ -155,6 +155,9 @@ public class WebHdfsFileSystemCopy extends FileSystem
     public synchronized void initialize(URI uri, Configuration conf
     ) throws IOException {
         super.initialize(uri, conf);
+
+        System.out.println("Hi there " + this.getClass() + ".initialize(uri: URI, conf: Configuration)");
+
         setConf(conf);
         /** set user pattern based on configuration file */
         UserParam.setUserPattern(conf.get(
@@ -452,6 +455,9 @@ public class WebHdfsFileSystemCopy extends FileSystem
 
     URL toUrl(final HttpOpParam.Op op, final Path fspath,
               final Param<?,?>... parameters) throws IOException {
+
+        System.out.println("Hi there " + this.getClass() + ".toUrl(final HttpOpParam.Op op, final Path fspath, final Param<?,?>... parameters)");
+
         //initialize URI path and query
         final String path = PATH_PREFIX
                 + (fspath == null? "/": makeQualified(fspath).toUri().getRawPath());
@@ -719,6 +725,9 @@ public class WebHdfsFileSystemCopy extends FileSystem
 
         @Override
         protected URL getUrl() throws IOException {
+
+            System.out.println("Hi there " + this.getClass() + ".getUrl()");
+
             if (excludeDatanodes.getValue() != null) {
                 Param<?, ?>[] tmpParam = new Param<?, ?>[parameters.length + 1];
                 System.arraycopy(parameters, 0, tmpParam, 0, parameters.length);
@@ -1210,9 +1219,11 @@ public class WebHdfsFileSystemCopy extends FileSystem
     }
 
     @Override
-    public FSDataInputStream open(final Path f, final int bufferSize
-    ) throws IOException {
+    public FSDataInputStream open(final Path f, final int bufferSize) throws IOException {
         statistics.incrementReadOps(1);
+
+        System.out.println("Hi there " + this.getClass() + ".open(final Path f, final int bufferSize)");
+
         return new FSDataInputStream(new WebHdfsInputStream(f, bufferSize));
     }
 
