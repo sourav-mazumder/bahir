@@ -31,7 +31,7 @@ import org.apache.hadoop.hdfs.web.resources.HttpOpParam.Op
  *
  * TODO: upgrade Hadoop version (Maven dependencies) to override SWebHdfsFileSystem
  */
-class BahirWebHdfsFileSystem extends WebHdfsFileSystem {
+class BahirWebHdfsFileSystem extends WebHdfsFileSystemCopy {
 
   // TODO: figure out how/where to authenticate
 
