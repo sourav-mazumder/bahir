@@ -17,11 +17,12 @@
 
 package org.apache.bahir.datasource.webhdfs
 
-import java.io._
+
+import java.io.{ByteArrayInputStream, OutputStream}
 import java.net.URI
 
 import scala.collection.mutable.HashMap
-import scala.math._
+import scala.math.floor
 
 import org.apache.bahir.datasource.webhdfs.util.WebHdfsConnector
 import org.apache.hadoop.conf.Configuration
@@ -99,25 +100,29 @@ class BahirWebHdfsFileSystem extends FileSystem {
 
   override def rename(srcPath: Path, destPath: Path): Boolean = {
 
-    //val destPathModStr = destPath.toString.replace("default/gateway/webhdfs/v1/", "")(1)
-    val destPathModStr = Path.getPathWithoutSchemeAndAuthority(destPath).toString.replace("/gateway/default/webhdfs/v1","")
-    println("In rename  - Path : " + srcPath + " , dest path : " + destPath + " , mod dest path : "+ destPathModStr)
-    //println("In rename after mod  - Path : " + srcPathModStr + " , dest path : " + destPathModStr)
-    WebHdfsConnector.renameFile(srcPath.toString, destPathModStr, certValidation, "1000:5000", usrCred)
+//    val destPathModStr = destPath.toString.replace("default/gateway/webhdfs/v1/", "")(1)
+    val destPathModStr = Path.getPathWithoutSchemeAndAuthority(destPath).toString
+      .replace("/gateway/default/webhdfs/v1", "")
+    println("In rename  - Path : " + srcPath + " , dest path : " + destPath +
+      " , mod dest path : " + destPathModStr)
+//    println("In rename after mod  - Path : " + srcPathModStr + " , dest path : " + destPathModStr)
+    WebHdfsConnector.renameFile(srcPath.toString, destPathModStr, certValidation, "1000:5000",
+      usrCred)
   }
 
   override def delete(srcPath: Path, recursive: Boolean): Boolean = {
     println("In delete  - Path : " + srcPath + " , recursive flg : " + recursive)
-    val srcPathModStr = modifyFilePath(srcPath).toString	
+    val srcPathModStr = modifyFilePath(srcPath).toString
     println("In delete after mod - Path : " + srcPathModStr + " , recursive flg : " + recursive)
     WebHdfsConnector.deleteFile(srcPathModStr, recursive, certValidation, "1000:5000", usrCred)
   }
 
   override def mkdirs(srcPath: Path, permission: FsPermission): Boolean = {
     println("In MkDirs  - Path : " + srcPath)
-    val srcPathModStr = modifyFilePath(srcPath).toString	
+    val srcPathModStr = modifyFilePath(srcPath).toString
     println("In MkDirs  after mod - Path : " + srcPathModStr)
-    WebHdfsConnector.makeDirectory(srcPathModStr, permission.toShort, certValidation, "1000:5000", usrCred)
+    WebHdfsConnector.makeDirectory(srcPathModStr, permission.toShort, certValidation, "1000:5000",
+      usrCred)
   }
 
   override def append(srcPath: Path,
@@ -136,10 +141,10 @@ class BahirWebHdfsFileSystem extends FileSystem {
       println("In bahir before calling webhdfsconnector  : ")
       val fStatusMap = WebHdfsConnector.getFileStatus(file, certValidation, "1000:5000", usrCred)
       if (fStatusMap != null) {
-      	fStatus = createFileStatus(f, fStatusMap)
-      	fileStatusMap.put(f.toString, fStatus)
+        fStatus = createFileStatus(f, fStatusMap)
+        fileStatusMap.put(f.toString, fStatus)
       }
-      fStatus      
+      fStatus
     }
     else {
       fStatus
@@ -207,7 +212,7 @@ class BahirWebHdfsFileSystem extends FileSystem {
   private def modifyFilePath(f: Path): Path = {
     // println("file uri : " + f.toUri)
     val wQryStr = f.toString.replace(getQryStrFromFilePath(f), "")
-    //val fStr = wQryStr.replace("_temporary", "bahir_tmp")	
+//    val fStr = wQryStr.replace("_temporary", "bahir_tmp")
     new Path(wQryStr)
   }
 

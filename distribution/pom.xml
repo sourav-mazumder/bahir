@@ -20,13 +20,13 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.bahir</groupId>
-        <artifactId>bahir-parent_2.11</artifactId>
-        <version>2.1.0-SNAPSHOT</version>
+        <artifactId>bahir-parent_2.10</artifactId>
+        <version>1.6.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.apache.bahir</groupId>
-    <artifactId>assembly_2.11</artifactId>
+    <artifactId>assembly_2.10</artifactId>
     <packaging>pom</packaging>
     <name>Apache Bahir - Release Distributions</name>
     <url>http://bahir.apache.org/</url>
